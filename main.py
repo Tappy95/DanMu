@@ -46,19 +46,16 @@ class InitChrome:
 
 
 def init():
-    texts = [
-        "666,牛逼铁子:麒麟趣玩在家赚钱",
-        "666,牛逼铁子:麒麟趣玩在家赚钱",
-    ]
     with open('./words.txt', mode='r', encoding='utf8') as file:
-        cookies = file.read()
-        texts = cookies.split('\n')
+        texts = file.read()
+        texts = texts.split('\n')
+        text = choice(texts)
         while True:
             chrome_obj = InitChrome()
             name = choice(platform_ls)
             platform_obj = platform_map.get(name)(chrome_obj.chrome)
             try:
-                platform_obj.run(texts)
+                platform_obj.run(text)
             except (NotUrlError, NotCookieError) as e:
                 traceback.print_exc()
 
@@ -71,7 +68,7 @@ def init():
                 RedisSession.set_cookie(platform_obj.name + "_cookie_ls", platform_obj.cookie)
                 chrome_obj.close()
                 time.sleep(10)
-            time.sleep(20)
+            time.sleep(10)
 
 
 def run():

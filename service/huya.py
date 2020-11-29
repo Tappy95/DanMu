@@ -16,5 +16,5 @@ class HuYa(BaseClass):
         if not self.is_login:
             return
 
-        self.chrome.send_text(xpath="//textarea[contains(@id, 'pub_msg_input')]", text='666,牛逼铁子:麒麟趣玩在家赚钱')
+        self.chrome.send_text(xpath="//textarea[contains(@id, 'pub_msg_input')]", text=text)
         self.chrome.click(xpath="//span[contains(@id, 'msg_send_bt')]")
