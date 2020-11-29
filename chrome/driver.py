@@ -27,7 +27,7 @@ class ChromeDriver:
         options.add_argument("--disable-logging")
         options.add_argument('--log-level=2')
         options.add_argument('--disable-gpu')
-        options.add_argument('--headless')  # 无头浏览器
+        # options.add_argument('--headless')  # 无头浏览器
         self.driver = start_chrome(url="https://www.baidu.com", headless=headless, options=options)
         self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
             "source": js
@@ -39,7 +39,7 @@ class ChromeDriver:
         except:
             pass
 
-    def get_web(self, url, second=3):
+    def get_web(self, url, second=10):
         go_to(url)
         time.sleep(second)
 

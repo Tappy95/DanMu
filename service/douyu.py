@@ -11,10 +11,10 @@ class DouYu(BaseClass):
         super().is_login()
         return True
 
-    def run(self):
-        super().run()
+    def run(self, text):
+        super().run(text)
         if not self.is_login:
             return
 
-        self.chrome.send_text(xpath="//textarea[contains(@class, 'ChatSend-txt')]", text="。。。")
+        self.chrome.send_text(xpath="//textarea[contains(@class, 'ChatSend-txt')]", text=text)
         self.chrome.click(xpath="//div[contains(@class, 'ChatSend-button')]")

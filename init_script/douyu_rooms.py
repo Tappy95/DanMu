@@ -7,13 +7,15 @@ redis_conn = None
 
 
 def get_douyu_urls():
+    redis_conn.delete('douyu_room_ls')
     for i in range(1, 5):
         resp = requests.get('https://www.douyu.com/gapi/rkc/directory/mixList/0_0/{}'.format(i))
         info = json.loads(resp.text)
         room_ids = [room['rid'] for room in info['data']['rl']]
         for room_id in room_ids:
             room_url = 'https://www.douyu.com/' + str(room_id)
-            redis_conn.lpush('douyu_room_list', room_url)
+            redis_conn.lpush('douyu_room_ls', room_url)
+            print(room_url)
 
 
 def get_redis_conn():
@@ -25,4 +27,7 @@ def get_redis_conn():
 if __name__ == '__main__':
     get_redis_conn()
     # set_cookies()
+    print('get_redis')
     get_douyu_urls()
+    print('done work')
+    input('输入任意key结束')

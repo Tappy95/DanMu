@@ -13,6 +13,7 @@ def get_huya_urls():
         "tagAll": 0,
         "page": '1',
     }
+    redis_conn.delete('huya_room_ls')
     for i in range(1, 5):
         params['page'] = i
         resp = requests.get('https://www.huya.com/cache.php', params=params)
@@ -20,7 +21,8 @@ def get_huya_urls():
         room_ids = [room['profileRoom'] for room in info['data']['datas']]
         for room_id in room_ids:
             room_url = 'https://www.huya.com/' + room_id
-            redis_conn.lpush('huya_room_list', room_url)
+            redis_conn.lpush('huya_room_ls', room_url)
+            print(room_url)
 
 
 def get_redis_conn():
@@ -31,5 +33,7 @@ def get_redis_conn():
 
 if __name__ == '__main__':
     get_redis_conn()
-    # set_cookies()
+    print('done work')
     get_huya_urls()
+    print('done work')
+    input('输入任意key结束')

@@ -2,7 +2,8 @@
 
 import os
 import time
-from random import choice
+import traceback
+from random import choice, random
 from multiprocessing import Process
 from service.douyu import DouYu
 from service.huya import HuYa
@@ -10,6 +11,7 @@ from chrome.driver import ChromeDriver
 from utils.log import logger
 from utils.error import NotUrlError, NotCookieError
 from utils.redis import RedisSession
+import multiprocessing
 
 platform_map = {
     "douyu": DouYu,
@@ -44,25 +46,37 @@ class InitChrome:
 
 
 def init():
-    while True:
-        chrome_obj = InitChrome()
-        name = choice(platform_ls)
-        platform_obj = platform_map.get(name)(chrome_obj.chrome)
-        try:
-            platform_obj.run()
-        except (NotUrlError, NotCookieError) as e:
-            logger.error("ERROR: {}".format(e))
-            time.sleep(8)
-        except Exception as e:
-            logger.error("ERROR: {}".format(e))
-            RedisSession.set_cookie(platform_obj.name + "_cookie_ls", platform_obj.cookie)
-            chrome_obj.close()
-            time.sleep(10)
-        time.sleep(10)
+    texts = [
+        "666,牛逼铁子:麒麟趣玩在家赚钱",
+        "666,牛逼铁子:麒麟趣玩在家赚钱",
+    ]
+    with open('./words.txt', mode='r', encoding='utf8') as file:
+        cookies = file.read()
+        texts = cookies.split('\n')
+        while True:
+            chrome_obj = InitChrome()
+            name = choice(platform_ls)
+            platform_obj = platform_map.get(name)(chrome_obj.chrome)
+            try:
+                platform_obj.run(texts)
+            except (NotUrlError, NotCookieError) as e:
+                traceback.print_exc()
+
+                logger.error("ERROR: {}".format(e))
+                time.sleep(8)
+            except Exception as e:
+                traceback.print_exc()
+
+                logger.error("ERROR: {}".format(e))
+                RedisSession.set_cookie(platform_obj.name + "_cookie_ls", platform_obj.cookie)
+                chrome_obj.close()
+                time.sleep(10)
+            time.sleep(20)
 
 
 def run():
-    cpu_num = os.cpu_count()
+    # cpu_num = os.cpu_count()
+    cpu_num = 4
     logger.info("CPU NUMBER IS {}".format(cpu_num))
     process_list = []
     for _ in range(cpu_num):
@@ -75,4 +89,6 @@ def run():
 
 
 if __name__ == '__main__':
+    multiprocessing.freeze_support()
     run()
+    input("输入任意key结束")

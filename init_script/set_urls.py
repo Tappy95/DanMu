@@ -1,6 +1,8 @@
 import redis
 
 redis_conn = None
+
+
 def get_curl():
     global redis_conn
     result = redis_conn.rpop('curl_list')
