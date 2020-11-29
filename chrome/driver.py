@@ -20,14 +20,14 @@ class ChromeDriver:
         options = ChromeOptions()
         options.add_experimental_option('useAutomationExtension', False)
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_argument('--blink-settings=imagesEnabled=false')
+        # options.add_argument('--blink-settings=imagesEnabled=false')
         options.add_argument('--incognito')
         options.add_argument('--disable-dev-shm-usage')
         options.add_argument('--no-sandbox')
         options.add_argument("--disable-logging")
         options.add_argument('--log-level=2')
         options.add_argument('--disable-gpu')
-        # options.add_argument('--headless')  # 无头浏览器
+        options.add_argument('--headless')  # 无头浏览器
         self.driver = start_chrome(url="https://www.baidu.com", headless=headless, options=options)
         self.driver.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
             "source": js

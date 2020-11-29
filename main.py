@@ -14,7 +14,7 @@ from utils.redis import RedisSession
 import multiprocessing
 
 platform_map = {
-    "douyu": DouYu,
+    # "douyu": DouYu,
     "huya": HuYa
 }
 
