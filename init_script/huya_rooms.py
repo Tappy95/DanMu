@@ -10,11 +10,13 @@ def get_huya_urls():
     params = {
         "m": 'LiveList',
         "do": 'getLiveListByPage',
+        # "gameId": 2135,
         "tagAll": 0,
         "page": '1',
     }
     redis_conn.delete('huya_room_ls')
-    for i in range(1, 5):
+
+    for i in range(1, 10):
         params['page'] = i
         resp = requests.get('https://www.huya.com/cache.php', params=params)
         info = json.loads(resp.text)
