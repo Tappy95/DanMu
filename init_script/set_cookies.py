@@ -10,7 +10,7 @@ def set_cookies(name):
         cookies_list = cookies.split('\n')
         for idx, cookie in enumerate(cookies_list):
             if cookie:
-                redis_conn.lpush('{}_cookie_ls'.format(name), cookie)
+                redis_conn.lpush('{}_cookie_ls'.format(name), cookie.strip())
                 print('set {}_cookie {}号'.format(name, idx))
 
 

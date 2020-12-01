@@ -1,12 +1,12 @@
 # -*- encoding=utf8 -*-
 
-import os
 import time
 import traceback
-from random import choice, random
+from service.huya import HuYa
+from os import cpu_count
+from random import choice
 from multiprocessing import Process
 from service.douyu import DouYu
-from service.huya import HuYa
 from chrome.driver import ChromeDriver
 from utils.log import logger
 from utils.error import NotUrlError, NotCookieError
@@ -19,6 +19,11 @@ platform_map = {
 }
 
 platform_ls = [key for key in platform_map.keys()]
+chrome_obj = None
+
+def get_words():
+    with open('words.txt', 'r', encoding='utf-8') as f:
+        return f.read().split('\n')
 
 
 class InitChrome:
@@ -28,7 +33,7 @@ class InitChrome:
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super().__new__(cls)
-            cls._chrome = ChromeDriver(headless=False)
+            cls._chrome = ChromeDriver()
         return cls._instance
 
     @property
@@ -45,39 +50,33 @@ class InitChrome:
         if self._chrome: self._chrome.close()
 
 
-def init():
-    with open('./words.txt', mode='r', encoding='utf8') as file:
-        texts = file.read()
-        texts = texts.split('\n')
-        text = choice(texts)
-        while True:
-            chrome_obj = InitChrome()
-            name = choice(platform_ls)
-            platform_obj = platform_map.get(name)(chrome_obj.chrome)
-            try:
-                platform_obj.run(text)
-            except (NotUrlError, NotCookieError) as e:
-                traceback.print_exc()
-
-                logger.error("ERROR: {}".format(e))
-                time.sleep(8)
-            except Exception as e:
-                traceback.print_exc()
-
-                logger.error("ERROR: {}".format(e))
-                RedisSession.set_cookie(platform_obj.name + "_cookie_ls", platform_obj.cookie)
-                chrome_obj.close()
-                time.sleep(10)
-            time.sleep(10)
+def init(text_ls):
+    global chrome_obj
+    while True:
+        chrome_obj = InitChrome()
+        name = choice(platform_ls)
+        platform_obj = platform_map.get(name)(chrome_obj.chrome)
+        try:
+            platform_obj.run(choice(text_ls))
+        except (NotUrlError, NotCookieError) as e:
+            logger.error("ERROR: {}".format(e))
+            time.sleep(8)
+        except Exception as e:
+            traceback.print_exc()
+            logger.error("ERROR: {}".format(e))
+            if not platform_obj.cookie_set: RedisSession.set_cookie(platform_obj.name + "_cookie_ls", platform_obj.cookie)
+            chrome_obj.close()
+            time.sleep(3)
+        else:
+            time.sleep(3)
 
 
-def run():
-    # cpu_num = os.cpu_count()
-    cpu_num = 4
-    logger.info("CPU NUMBER IS {}".format(cpu_num))
+def run(c):
+    logger.info("CPU NUMBER IS {}".format(c))
     process_list = []
-    for _ in range(cpu_num):
-        process = Process(target=init)
+    text_ls = get_words()
+    for _ in range(c):
+        process = Process(target=init, args=(text_ls,))
         process.start()
         process_list.append(process)
 
@@ -87,5 +86,13 @@ def run():
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
-    run()
+    cpu_num = cpu_count()
+    while True:
+        c_count = input('请输入浏览器个数:')
+        if c_count.isdigit():
+            c = int(c_count) if int(c_count) <= cpu_num else cpu_num
+            run(c)
+            break
+        else:
+            print("请输入数字")
     input("输入任意key结束")
