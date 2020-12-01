@@ -19,7 +19,7 @@ platform_map = {
 }
 
 platform_ls = [key for key in platform_map.keys()]
-chrome_obj = None
+# chrome_obj = None
 
 def get_words():
     with open('words.txt', 'r', encoding='utf-8') as f:
@@ -32,7 +32,7 @@ class InitChrome:
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            cls._instance = super().__new__(cls)
+            cls._instance = object().__new__(cls)
             cls._chrome = ChromeDriver()
         return cls._instance
 
@@ -46,12 +46,12 @@ class InitChrome:
         cls._chrome = None
         cls._instance = None
 
-    def __del__(self):
-        if self._chrome: self._chrome.close()
+    # def __del__(self):
+    #     if self._chrome: self._chrome.close()
 
 
 def init(text_ls):
-    global chrome_obj
+    # global chrome_obj
     while True:
         chrome_obj = InitChrome()
         name = choice(platform_ls)

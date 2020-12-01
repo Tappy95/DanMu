@@ -67,10 +67,10 @@ class ChromeDriver:
 
     def wait_element(self, xpath):
         try:
-            WebDriverWait(self.driver, 25, 0.01).until(
+            ele = WebDriverWait(self.driver, 25, 1).until(
                 EC.presence_of_element_located((By.XPATH, xpath))
             )
-            return True
+            return ele
         except:
             return False
 
